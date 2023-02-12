@@ -1,4 +1,4 @@
-module github.com/VaradBelwalkar/go_client
+module github.com/VaradBelwalkar/go_client_for_windows
 
 go 1.18
 

@@ -2,7 +2,7 @@ package requests
 
 import (
 	"fmt"
-	sh "github.com/VaradBelwalkar/go_client/session_handling"
+	sh "github.com/VaradBelwalkar/go_client_for_windows/session_handling"
 )
 
 

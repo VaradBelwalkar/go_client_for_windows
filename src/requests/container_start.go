@@ -6,7 +6,7 @@ import (
 	"os/exec"
 	"os"
 	"io/ioutil"
-	sh "github.com/VaradBelwalkar/go_client/session_handling"
+	sh "github.com/VaradBelwalkar/go_client_for_windows/session_handling"
 )
 
 
@@ -39,9 +39,9 @@ func Container_Start(imageName string){
 	privateKey:=resp["privatekey"].(string)	
 	port:=resp["port"].(string)
 	 //define the path to the bash script
-	scriptPath := sh.ProjectPath+"/connections/bash_script.sh"
+	scriptPath := sh.ProjectPath+"\\src\\connections\\ps_script.ps1"
 	
-	err = ioutil.WriteFile(sh.ProjectPath+"/connections/keyForRemoteServer", []byte(privateKey), 0644)
+	err = ioutil.WriteFile(sh.ProjectPath+"\\src\\connections\\keyForRemoteServer", []byte(privateKey), 0644)
     if err != nil {
         fmt.Println(string(colorRed),"Something went wrong while storing PrivateKey",string(colorReset))
 		return
@@ -49,7 +49,7 @@ func Container_Start(imageName string){
 	// Parameters to pass to the script
 	
 	// start the script
-	cmd := exec.Command(scriptPath,port,user_credentials["ip"],sh.ProjectPath+"/connections/keyForRemoteServer")
+	cmd := exec.Command("powershell.exe", "-File",scriptPath,port,user_credentials["ip"],sh.ProjectPath+"\\src\\connections\\keyForRemoteServer")
 	cmd.Stdin = os.Stdin
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr

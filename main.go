@@ -10,9 +10,9 @@ import (
     //"github.com/VaradBelwalkar/help"
     //"github.com/VaradBelwalkar/session_handling"
 	//
-    sh "github.com/VaradBelwalkar/go_client/session_handling"
-    h "github.com/VaradBelwalkar/go_client/help"
-    rq "github.com/VaradBelwalkar/go_client/src/requests"
+    sh "github.com/VaradBelwalkar/go_client_for_windows/session_handling"
+    h "github.com/VaradBelwalkar/go_client_for_windows/help"
+    rq "github.com/VaradBelwalkar/go_client_for_windows/src/requests"
 
 )
 
@@ -31,7 +31,7 @@ func main() {
    // colorPurple := "\033[35m"
     //colorCyan := "\033[36m"
     //colorWhite := "\033[37m"
-	cmd := exec.Command("clear")
+	cmd := exec.Command("powershell", "-Command", "Clear-Host")
 	cmd.Stdout = os.Stdout
 	cmd.Run()
     //Login with the present credentials
@@ -43,7 +43,7 @@ func main() {
         // Read the user's input
         reader := bufio.NewReader(os.Stdin)
         input, err := reader.ReadString('\n')
-        input=strings.TrimSuffix(input, "\n")
+        input=strings.TrimSuffix(input, "\r\n")
         if err != nil {
             fmt.Println(err)
             continue
@@ -58,7 +58,7 @@ func main() {
         // Check the first word to see which command the user entered
         switch words[0] {
         case "clear":
-            cmd := exec.Command("clear")
+            cmd := exec.Command("powershell", "-Command", "Clear-Host")
             cmd.Stdout = os.Stdout
             cmd.Run()
         case "register":

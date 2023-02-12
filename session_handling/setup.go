@@ -7,7 +7,6 @@ import (
 	"strings"
 	"os"
 	"io/ioutil"
-	//"github.com/VaradBelwalkar/go_client/main"
 )
 var ProjectPath string
 
@@ -30,7 +29,7 @@ func Store_credentials(username string,password string,IP string,port string) {
 		panic(err)
 	}
 
-	f, err := os.OpenFile(ProjectPath+"/credentials.bin", os.O_RDWR|os.O_CREATE|os.O_TRUNC, 0755)
+	f, err := os.OpenFile(ProjectPath+"\\credentials.bin", os.O_RDWR|os.O_CREATE|os.O_TRUNC, 0755)
 	if err != nil{
 		fmt.Println(string(colorRed),"Something went wrong while storing credentials!Please try again",string(colorReset))
 	}
@@ -150,7 +149,7 @@ func Show_Credentials()(map[string]string,error){
     colorRed := "\033[31m"
 	var user_credentials map[string]string
 	// Open the file in binary mode
-	file, err := os.Open(ProjectPath+"/credentials.bin")
+	file, err := os.Open(ProjectPath+"\\credentials.bin")
 	if err != nil {
 		fmt.Println(string(colorRed),"\t\tFile not found!\n \t\t Run `change config` to configure user credentials",string(colorReset))
 		return nil,err
@@ -194,7 +193,7 @@ func Set_url(){
 
 	var user_credentials map[string]string
 	// Open the file in binary mode
-	file, err := os.Open(ProjectPath+"/credentials.bin")
+	file, err := os.Open(ProjectPath+"\\credentials.bin")
 	if err != nil {
 		fmt.Println(string(colorRed),"\t\tFile not found!\n \t\t Run `change config` to configure user credentials",string(colorReset))
 		return 
@@ -236,7 +235,7 @@ func Set_port(){
 
 	var user_credentials map[string]string
 	// Open the file in binary mode
-	file, err := os.Open(ProjectPath+"/credentials.bin")
+	file, err := os.Open(ProjectPath+"\\credentials.bin")
 	if err != nil {
 		fmt.Println(string(colorRed),"\t\tFile not found!\n \t\t Run `change config` to configure user credentials",string(colorReset))
 		return 

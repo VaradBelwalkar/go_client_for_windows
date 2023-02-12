@@ -34,14 +34,14 @@ func Register() {
 
 	fmt.Print("Enter the username you want: ")
 	tempName, _ := reader.ReadString('\n')
-	username:=strings.ReplaceAll(tempName,"\n","")
+	username:=strings.ReplaceAll(tempName,"\r\n","")
 
 	fmt.Print("Enter your password: ")
 	tempPassword, _ := reader.ReadString('\n')
-	password:=strings.ReplaceAll(tempPassword,"\n","")
+	password:=strings.ReplaceAll(tempPassword,"\r\n","")
 	fmt.Print("confirm your password: ")
 	tempPassword1, _ := reader.ReadString('\n')
-	password1:=strings.ReplaceAll(tempPassword1,"\n","")
+	password1:=strings.ReplaceAll(tempPassword1,"\r\n","")
 
     for {
 		if password == password1{
@@ -50,18 +50,18 @@ func Register() {
         fmt.Println(string(colorRed),"Your Password does not match. Please try again",string(colorReset))
 		fmt.Print(" Enter your password: ")
 		tempPassword, _ = reader.ReadString('\n')
-		password=strings.ReplaceAll(tempPassword,"\n","")
+		password=strings.ReplaceAll(tempPassword,"\r\n","")
 		fmt.Print("confirm your password: ")
 		tempPassword1, _ = reader.ReadString('\n')
-		password1=strings.ReplaceAll(tempPassword1,"\n","")
+		password1=strings.ReplaceAll(tempPassword1,"\r\n","")
 	}
 
 	fmt.Print("Enter the server IP: ")
 	tempIP,_:=reader.ReadString('\n')
-	IP:=strings.ReplaceAll(tempIP,"\n","")
+	IP:=strings.ReplaceAll(tempIP,"\r\n","")
 	fmt.Print("Enter the port: ")
 	tempPort,_:=reader.ReadString('\n')
-	port:=strings.ReplaceAll(tempPort,"\n","")
+	port:=strings.ReplaceAll(tempPort,"\r\n","")
 	//Request made to get the form required	
 	urlString:=	"http://"+strings.ReplaceAll(IP, " ", "")+":"+strings.ReplaceAll(port, " ", "")+"/register"
 	res,err:=http.Get(urlString)

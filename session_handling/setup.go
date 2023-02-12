@@ -65,7 +65,7 @@ func Setup(){
 	for {
 	fmt.Print("Enter the username: ")
 	tempUsername, _ = reader.ReadString('\n')
-	username=strings.ReplaceAll(tempUsername,"\n","")
+	username=strings.ReplaceAll(tempUsername,"\r\n","")
 		if username!=""{break
 		}else {
 			fmt.Println(string(colorYellow),"Please enter a valid username!",string(colorReset))
@@ -75,7 +75,7 @@ func Setup(){
 	for{
 	fmt.Print("Enter your password: ")
 	tempPassword, _ = reader.ReadString('\n')
-	password=strings.ReplaceAll(tempPassword,"\n","")
+	password=strings.ReplaceAll(tempPassword,"\r\n","")
 	if password!=""{break
 		}else {
 			fmt.Println(string(colorYellow),"Please enter a valid password!",string(colorReset))
@@ -84,7 +84,7 @@ func Setup(){
 	for{
 	fmt.Print("confirm your password: ")
 	tempPassword1, _ = reader.ReadString('\n')
-	password1=strings.ReplaceAll(tempPassword1,"\n","")
+	password1=strings.ReplaceAll(tempPassword1,"\r\n","")
 	if password1!=""{break
 	} else{
 		fmt.Println(string(colorYellow),"Please enter valid confirmation!",string(colorReset))
@@ -99,7 +99,7 @@ func Setup(){
 		for{
 			fmt.Print("Enter your password: ")
 			tempPassword, _ = reader.ReadString('\n')
-			password=strings.ReplaceAll(tempPassword,"\n","")
+			password=strings.ReplaceAll(tempPassword,"\r\n","")
 			if password!=""{break
 				}else {
 					fmt.Println(string(colorYellow),"Please enter a valid password!",string(colorReset))
@@ -108,7 +108,7 @@ func Setup(){
 			for{
 			fmt.Print("confirm your password: ")
 			tempPassword1, _ = reader.ReadString('\n')
-			password1=strings.ReplaceAll(tempPassword1,"\n","")
+			password1=strings.ReplaceAll(tempPassword1,"\r\n","")
 			if password1!=""{break
 			} else{
 				fmt.Println(string(colorYellow),"Please enter valid confirmation!",string(colorReset))
@@ -119,7 +119,7 @@ func Setup(){
 	for{
 	fmt.Print("Enter the IP: ")
 	tempIP,_=reader.ReadString('\n')
-	IP=strings.ReplaceAll(tempIP,"\n","")
+	IP=strings.ReplaceAll(tempIP,"\r\n","")
 		if IP!=""{
 			break
 		}	else{
@@ -129,7 +129,7 @@ func Setup(){
 for{
 	fmt.Print("Enter the port: ")
 	tempPort,_=reader.ReadString('\n')
-	port=strings.ReplaceAll(tempPort,"\n","")
+	port=strings.ReplaceAll(tempPort,"\r\n","")
 	
 	if port!=""{
 		break
@@ -183,7 +183,7 @@ func Set_url(){
 	for{
 		fmt.Print(string(colorYellow),"Enter the IP: ",string(colorReset))
 		tempIP,_=reader.ReadString('\n')
-		IP=strings.ReplaceAll(tempIP,"\n","")
+		IP=strings.ReplaceAll(tempIP,"\r\n","")
 			if IP!=""{
 				break
 			}	else{
@@ -224,7 +224,7 @@ func Set_port(){
 	for{
 		fmt.Print("Enter the port: ")
 		PORT,_=reader.ReadString('\n')
-		PORT=strings.TrimSuffix(PORT, "\n")
+		PORT=strings.ReplaceAll(PORT,"\r\n","")
 		
 		if PORT!=""{
 			break

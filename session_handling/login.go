@@ -129,7 +129,7 @@ func Login() {
 	}
  
 	//Do IO on file to retrieve username and password 
-
+	
 	user_credentials,err:=Show_Credentials()
 	if err!=nil{
 		fmt.Println(string(colorYellow),"Please run change config to store your credentials",string(colorReset))
@@ -189,7 +189,7 @@ func Login() {
 		return
 	} else if res.StatusCode == 404{
 		fmt.Println(string(colorRed),"User doesn't exist!\n",string(colorReset),string(colorYellow),"Please correct your username or if not registered, please register first",string(colorReset))
-		return 
+		return 	
 	}}
 
 	var sessionID string

@@ -147,12 +147,12 @@ for{
 func Show_Credentials()(map[string]string,error){
 	colorReset := "\033[0m"
 
-    colorRed := "\033[31m"
+	colorYellow := "\033[33m"
 	var user_credentials map[string]string
 	// Open the file in binary mode
 	file, err := os.Open(ProjectPath+"\\credentials.bin")
 	if err != nil {
-		fmt.Println(string(colorRed),"\t\tFile not found!\n \t\t Run `change config` to configure user credentials",string(colorReset))
+		fmt.Println(string(colorYellow)," File not found!\n Run `change config` to configure user credentials",string(colorReset))
 		return nil,err
 	}
 	defer file.Close()
@@ -185,6 +185,7 @@ func Set_url(){
 		fmt.Print(string(colorYellow),"Enter the IP: ",string(colorReset))
 		tempIP,_=reader.ReadString('\n')
 		IP=strings.ReplaceAll(tempIP,"\r\n","")
+		IP=strings.ReplaceAll(IP," ","")
 			if IP!=""{
 				break
 			}	else{
@@ -219,13 +220,13 @@ func Set_url(){
 func Set_port(){
 	colorReset := "\033[0m"
 	colorYellow := "\033[33m"
-    colorRed := "\033[31m"
 	reader := bufio.NewReader(os.Stdin)
 	var PORT string
 	for{
 		fmt.Print("Enter the port: ")
 		PORT,_=reader.ReadString('\n')
 		PORT=strings.ReplaceAll(PORT,"\r\n","")
+		PORT=strings.ReplaceAll(PORT," ","")
 		
 		if PORT!=""{
 			break
@@ -238,7 +239,7 @@ func Set_port(){
 	// Open the file in binary mode
 	file, err := os.Open(ProjectPath+"\\credentials.bin")
 	if err != nil {
-		fmt.Println(string(colorRed),"\t\tFile not found!\n \t\t Run `change config` to configure user credentials",string(colorReset))
+		fmt.Println(string(colorYellow)," File not found!\n Run `change config` to configure user credentials",string(colorReset))
 		return 
 	}
 	defer file.Close()

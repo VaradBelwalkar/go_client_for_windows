@@ -51,7 +51,7 @@ func main() {
 
         // Strip leading and trailing whitespace from the input
         input = strings.TrimSpace(input)
-
+        input = strings.Join(strings.Fields(input), " ")
         // Split the input into separate words
         words := strings.Split(input, " ")
 
@@ -157,7 +157,6 @@ func main() {
             //Print configuration here
             resp,err:=sh.Show_Credentials()
             if err!=nil{
-                fmt.Println(string(colorYellow),"No data found!Please fill up the data by running change config",string(colorReset))
                 continue
             }
             for k,v:=range resp{

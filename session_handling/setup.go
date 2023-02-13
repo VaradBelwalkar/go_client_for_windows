@@ -29,7 +29,7 @@ func Store_credentials(username string,password string,IP string,port string) {
 		panic(err)
 	}
 
-	f, err := os.OpenFile(ProjectPath+"\\credentials.bin", os.O_RDWR|os.O_CREATE|os.O_TRUNC, 0755)
+	f, err := os.OpenFile(ProjectPath+"\\credentials.bin", os.O_RDWR|os.O_CREATE|os.O_TRUNC, 0600)
 	if err != nil{
 		fmt.Println(string(colorRed),"Something went wrong while storing credentials!Please try again",string(colorReset))
 	}
@@ -120,6 +120,7 @@ func Setup(){
 	fmt.Print("Enter the IP: ")
 	tempIP,_=reader.ReadString('\n')
 	IP=strings.ReplaceAll(tempIP,"\r\n","")
+	IP=strings.ReplaceAll(IP," ","")
 		if IP!=""{
 			break
 		}	else{
@@ -130,7 +131,7 @@ for{
 	fmt.Print("Enter the port: ")
 	tempPort,_=reader.ReadString('\n')
 	port=strings.ReplaceAll(tempPort,"\r\n","")
-	
+	port=strings.ReplaceAll(port," ","")
 	if port!=""{
 		break
 	}else{

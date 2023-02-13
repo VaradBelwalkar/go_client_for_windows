@@ -60,9 +60,11 @@ func Remove_account() {
 		fmt.Print("Enter the server IP: ")
 		tempIP,_=reader.ReadString('\n')
 		IP=strings.ReplaceAll(tempIP,"\r\n","")
+		IP=strings.ReplaceAll(IP," ","")
 		fmt.Print("Enter the port: ")
 		tempPort,_=reader.ReadString('\n')
 		port=strings.ReplaceAll(tempPort,"\r\n","")
+		port=strings.ReplaceAll(port," ","")
 
 	}else{
 		IP=user_credentials["ip"]

@@ -141,6 +141,11 @@ func Login() {
 
 	//Request made to get the form required
 	resp,err:=http.Get("http://"+user_credentials["ip"]+":"+user_credentials["port"]+"/login")
+	if err!=nil{
+		fmt.Println(string(colorRed),"Something went wrong,\n Check ip address or port if configured correctly else might be server issue!",string(colorReset))
+		return
+	}
+	defer resp.Body.Close()
 	
 
 	doc, err := goquery.NewDocumentFromReader(resp.Body)

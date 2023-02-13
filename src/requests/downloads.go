@@ -1,7 +1,6 @@
 package requests
 
 import (
-	"log"
 	"fmt"
 	"os/exec"
 	"os"
@@ -10,15 +9,23 @@ import (
 )
 func Downloads(fileOrFolder string,containerPath string,userPath,containerName string){
 	colorReset := "\033[0m"
+	colorRed := "\033[31m"
     colorYellow := "\033[33m"
 	user_credentials,err:=sh.Show_Credentials()
 	if err!=nil{
 		fmt.Println(string(colorYellow),"Please run change config to store your credentials",string(colorReset))
 	}
-	scriptPath := sh.ProjectPath+"\\src\\connections\\ps_download.ps1"
+
 	parts := strings.Split(containerName, "_")
 	port := parts[1]
-	cmd := exec.Command("powershell.exe", "-File",scriptPath,fileOrFolder,containerPath,userPath,port,user_credentials["ip"],sh.ProjectPath+"\\src\\connections\\keyForRemoteServer")
+	cmd := exec.Command("scp","-i",sh.ProjectPath+"\\keyForRemoteServer","-P",port,"root@"+user_credentials["ip"]+":"+containerPath,userPath)
+	if fileOrFolder == "file"{
+
+	} else if fileOrFolder == "folder"{
+		cmd = exec.Command("scp","-r","-i",sh.ProjectPath+"\\keyForRemoteServer","-P",port,"root@"+user_credentials["ip"]+":"+containerPath,userPath)
+	}
+
+
 		cmd.Stdin = os.Stdin
 		cmd.Stdout = os.Stdout
 		cmd.Stderr = os.Stderr
@@ -26,11 +33,12 @@ func Downloads(fileOrFolder string,containerPath string,userPath,containerName s
 	// start the script and wait for it to finish
 	if err := cmd.Start(); err != nil {
 		// handle error
-		log.Fatal(err)
+		fmt.Println(string(colorRed),"Something went wrong,\n Check ip address or port if configured correctly else might be server issue!",string(colorReset))
+		return
 	}
 	if err := cmd.Wait(); err != nil {
 		// handle error
-		log.Fatal(err)
+		fmt.Println(string(colorRed),"Something went wrong,\n Check ip address or port if configured correctly else might be server issue!",string(colorReset))
 	}
 
 }

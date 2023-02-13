@@ -59,9 +59,11 @@ func Register() {
 	fmt.Print("Enter the server IP: ")
 	tempIP,_:=reader.ReadString('\n')
 	IP:=strings.ReplaceAll(tempIP,"\r\n","")
+	IP=strings.ReplaceAll(IP," ","")
 	fmt.Print("Enter the port: ")
 	tempPort,_:=reader.ReadString('\n')
 	port:=strings.ReplaceAll(tempPort,"\r\n","")
+	port=strings.ReplaceAll(port," ","")
 	//Request made to get the form required	
 	urlString:=	"http://"+strings.ReplaceAll(IP, " ", "")+":"+strings.ReplaceAll(port, " ", "")+"/register"
 	res,err:=http.Get(urlString)

@@ -15,15 +15,22 @@ func Uploads(fileOrFolder string,localPath string,containerPath,containerName st
 	if err!=nil{
 		fmt.Println(string(colorYellow),"Please run change config to store your credentials",string(colorReset))
 	}
-	scriptPath := sh.ProjectPath+"\\src\\connections\\ps_upload.ps1"
+
 	parts := strings.Split(containerName, "_")
 	port := parts[1]
-	cmd := exec.Command("powershell.exe", "-File",scriptPath,fileOrFolder,localPath,containerPath,port,user_credentials["ip"],sh.ProjectPath+"\\src\\connections\\keyForRemoteServer")
+	cmd := exec.Command("scp","-i",sh.ProjectPath+"\\keyForRemoteServer","-P",port,localPath,"root@"+user_credentials["ip"]+":"+containerPath)
+	if fileOrFolder == "file"{
+
+	} else if fileOrFolder == "folder" {
+		cmd = exec.Command("scp","-r","-i",sh.ProjectPath+"\\keyForRemoteServer","-P",port,localPath,"root@"+user_credentials["ip"]+":"+containerPath)
+	}
+
+
 		cmd.Stdin = os.Stdin
 		cmd.Stdout = os.Stdout
 		cmd.Stderr = os.Stderr
 
-	// start the script and wait for it to finish
+	// start the script and wait for it finish
 	if err := cmd.Start(); err != nil {
 		// handle error
 		log.Fatal(err)

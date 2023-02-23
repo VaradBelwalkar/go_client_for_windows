@@ -6,96 +6,69 @@ import (
 //Just used to export information
 var help = `
 NAME
-       go : Client to access microservices
+       dyplug : Client to access microservices
 
-DESCRIPTION
-go :
-         go is a way to access secure personal storage at the server with ability to access various runtimes 
-         the server provides with access to some services
+dyplug COMMANDS
 
-go STARTUP 
-       To get into go environment, just type,
+       dyplug > login
+              
+              Login to access the services
 
-       >go start
-
-go COMMANDS
-
-       go > config
+       dyplug > config
 
                Displays the configured URL, username, and password of the client
 
-       go > config edit
+       dyplug > change config
 
               Edits configuration and saves the changes
 	   
-	go > version
 
-               Shows the version number of the project
-
-       go > server
-
-               Shows information about the server
-
-       go > signup
-
-              Creates an account with given username and password
-
-       go > view
-      
-              lists all the files in the cloud
-
-       go > uploadfile <file-path>
+       dyplug > upload file <file_path> <container_path> <container_name>
 
               uploads the specified file into the cloud
 
-       go > uploaddir <dir-path>
+       dyplug > upload folder <dir_path> <container_path> <container_name>
 
               uploads the specified directory to the cloud
 
-       go > download <filename> <filepath>
+       dyplug > download file <filepath_in_container> <local_path> <container_name> 
 
               downloads the specified file from the cloud
-
-       go > delete <filepath>+'/'+<filename>
-
-              deletes the specified file in the cloud
-
-       go > sync <dirpath>
-
-              sync the specified directory with the cloud
+       
+       dyplug > download folder <folderpath_in_container> <local_path> <container_name>
 
 
-
-go COMMANDS TO ACCESS RUNTIMES
+dyplug COMMANDS TO ACCESS RUNTIMES
 
   (CURRENTLY AVAILABLE RUNTIMES : ubuntu , development_server)
 
   (You can own maximum of 5 containers at a time)
 
 
-       go > container run <runtime_name> 
+       dyplug > container run <runtime_name> <port_to_expose(optional)>
              
               get a new specifed container
 
-       go > container list images
+       dyplug > container list images
 
               get available os images
 
-       go > container list containers
+       dyplug > container list containers
 
-              get the list of containers that you own (useful for which container to resume)
+              get the list of containers that you own
 
-       go > container resume <container_name>
+       dyplug > container start <container_name>
 
               get the specified container that you own from your owned_containers list
 
-       go > container stop <container_name>
+       dyplug > container stop <container_name>
 
-              stop the specified container or all  on server side
+              stop the specified container on server side
 
-       go > container remove <container_name>
+       dyplug > container remove <container_name>
 
-              remove the specified container or all from the server
+              remove the specified container from the server
+
 
 `
 

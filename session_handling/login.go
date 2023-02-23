@@ -3,6 +3,7 @@ package session_handling
 import (
 	"fmt"
 	"os"
+	"bufio"
 	"net/url"
 	"strings"
 	"net/http"
@@ -120,7 +121,6 @@ import (
 // This function logs into the server and preserves JWT for further communication
 func Login() {
 	colorReset := "\033[0m"
-	colorGreen := "\033[32m"
 	colorYellow := "\033[33m"
     colorRed := "\033[31m"
 	// Create a new HTTP client with a timeout
@@ -129,9 +129,10 @@ func Login() {
 	}
  
 	//Do IO on file to retrieve username and password 
-	
+
 	user_credentials,err:=Show_Credentials()
 	if err!=nil{
+		fmt.Println(string(colorYellow),"Please run change config to store your credentials",string(colorReset))
 		return
 	}
 	//Do whenever submitting form data
@@ -195,7 +196,7 @@ func Login() {
 		return
 	} else if res.StatusCode == 404{
 		fmt.Println(string(colorRed),"User doesn't exist!\n",string(colorReset),string(colorYellow),"Please correct your username or if not registered, please register first",string(colorReset))
-		return 	
+		return 
 	}}
 
 	var sessionID string
@@ -209,10 +210,13 @@ func Login() {
 	//The JWT token
 	JWT:= res.Header.Get("authorization")    //Here you can access this token anywhere in this package
 	splitToken:=strings.Split(JWT, "Bearer ")
+	fmt.Println("TEMPTEMPTEMPTEMP")
 	tokenString:=splitToken[1]
 	os.Setenv("JWT",tokenString)
 	os.Setenv("session",sessionID)
-	fmt.Println(string(colorGreen),"Login Completed!",string(colorReset))
+	fmt.Println(sessionID)
+	Verify_OTP()
+	
 //Login completed
 
 return 
@@ -221,6 +225,136 @@ return
 
 
 
+func Verify_OTP(){
+    colorReset := "\033[0m"
+	colorYellow := "\033[33m"
+    colorRed := "\033[31m"
+	colorGreen := "\033[32m"
+	data := url.Values{}
+	reader := bufio.NewReader(os.Stdin)
+	user_credentials,err:=Show_Credentials()
+	if err!=nil{
+		fmt.Println(string(colorYellow),"Please run change config to store your credentials",string(colorReset))
+		return
+	}
+	_, ok := os.LookupEnv("JWT")
+	if ok==false{
+			fmt.Println(string(colorRed),"Please login",string(colorReset))
+			return
+	}
+	JWT:=os.Getenv("JWT")
 
+	_, ok = os.LookupEnv("session")
+	if ok==false{
+		fmt.Println(string(colorRed),"Please login",string(colorReset))
+		return 
+	}
+  	cookieValue:=os.Getenv("session")
+	cookie := &http.Cookie{
+        Name:   "session",
+        Value:  cookieValue,
+        MaxAge: 300,
+    }
+
+	req, err := http.NewRequest("GET","http://"+user_credentials["ip"]+":"+user_credentials["port"]+"/otphandler",nil)
+	client:=&http.Client{}
+	req.Header.Set("Authorization","Bearer "+JWT) // JWT must be available
+	req.AddCookie(cookie)
+
+	res, err := client.Do(req)
+	if err != nil {
+		fmt.Println(string(colorRed),"Error while receiving response",string(colorReset))
+		return 
+	}
+	defer res.Body.Close()
+
+	if res.StatusCode!=200{
+		if res.StatusCode == 401{
+		fmt.Println(string(colorRed),"Please login again!",string(colorReset))
+		return 
+		}	else {
+			return 
+		}
+	}	
+
+	doc, err := goquery.NewDocumentFromReader(res.Body)
+	if err != nil {
+		fmt.Println(string(colorRed),"something went wrong",string(colorReset))
+		return
+	}
+
+	// Find the hidden field with the name "csrf_token"
+	csrfToken := doc.Find("input[name=csrf]").First().AttrOr("value", "")
+	if csrfToken == "" {
+		fmt.Println("CSRF token not found")
+		return 
+	}
+
+	fmt.Print(string(colorYellow),"Please enter the OTP sent to your registered EMAIL ID: ",string(colorReset))
+	tempOTP,_:=reader.ReadString('\n')
+	OTP:=strings.ReplaceAll(tempOTP,"\n","")
+	OTP=strings.ReplaceAll(OTP," ","")
+	//Preparing the body of the POST request, which is nothing but form data being sent using appropriate header
+	data.Add("otp", OTP)
+	data.Add("csrf",csrfToken)
+
+	csrfCookie := &http.Cookie{
+        Name:   "csrftoken",
+        Value:  csrfToken,
+        MaxAge: 30000,
+    }
+	sessionCookie:=&http.Cookie{
+        Name:   "session",
+        Value:  cookieValue,
+        MaxAge: 30000,
+    }
+	req,err= http.NewRequest("POST","http://"+user_credentials["ip"]+":"+user_credentials["port"]+"/otphandler",strings.NewReader(data.Encode()))
+	if err!=nil{
+		return 
+	}
+	req.AddCookie(csrfCookie)
+	req.AddCookie(sessionCookie)
+	req.Header.Set("Authorization","Bearer "+JWT)
+	//The header is set to this to recognise that the body of the request is holding form data
+	req.Header.Set("Content-Type","application/x-www-form-urlencoded")
+	
+	//Here the request is being actually sent
+	//the response object will contain the JWT token
+	res, err = client.Do(req)
+	if err != nil {
+		fmt.Println(string(colorRed),"Something went wrong!",string(colorReset))
+		return 
+	}
+	defer res.Body.Close()
+	
+	//We can get here statuses only 403 or 208 
+	if res.StatusCode!=200{
+	if res.StatusCode==401 {
+		fmt.Println(string(colorRed),"Wrong username or password!",string(colorReset))
+		return
+	} else if res.StatusCode == 404{
+		fmt.Println(string(colorRed),"User doesn't exist!\n",string(colorReset),string(colorYellow),"Please correct your username or if not registered, please register first",string(colorReset))
+		return 
+	}}
+
+	var sessionID string
+	for _, cookie := range res.Cookies() {
+		if cookie.Name == "session" {
+			sessionID = cookie.Value
+			break
+		}
+	}
+
+	//The JWT token
+	JWT= res.Header.Get("authorization")    //Here you can access this token anywhere in this package
+	splitToken:=strings.Split(JWT, "Bearer ")
+	tokenString:=splitToken[1]
+	os.Setenv("JWT",tokenString)
+	os.Setenv("session",sessionID)
+	fmt.Println(string(colorGreen),"Login Completed!",string(colorReset))
+	return
+
+
+}
 
 

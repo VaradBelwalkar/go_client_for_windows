@@ -17,7 +17,7 @@ import (
 // This function logs into the server and preserves JWT for further communication
 func Register() {
 	colorReset := "\033[0m"
-	colorGreen := "\033[32m"
+	//colorGreen := "\033[32m"
     colorRed := "\033[31m"
 	// Create a new HTTP client with a timeout
 	client := &http.Client{
@@ -135,11 +135,28 @@ func Register() {
 
 	//Here the 201 StatusCode means the resource is successfully created on the server
 	if res.StatusCode == 200 {
-		//Meaning the registration is successful
-		fmt.Println(string(colorGreen),"Registered successfully!", string(colorReset))
 		Store_credentials(username,password,IP,port)
-		return
+		var sessionID string
+		for _, cookie := range res.Cookies() {
+			if cookie.Name == "session" {
+				sessionID = cookie.Value
+				break
+			}
+		}
+	
+		//The JWT token
+		JWT:= res.Header.Get("authorization")    //Here you can access this token anywhere in this package
+		splitToken:=strings.Split(JWT, "Bearer ")
+		tokenString:=splitToken[1]
+		os.Setenv("JWT",tokenString)
+		os.Setenv("session",sessionID)
+		Verify_Register_OTP()
 
+	} else if  res.StatusCode == 424{
+		fmt.Println(string(colorRed),"The Email ID you provided is not authorized with the server, Please contact DYPLUG team for more details", string(colorReset))
+		return
+	} else if res.StatusCode == 406{
+		fmt.Println(string(colorRed),"The Email ID you provided has already an account registered!", string(colorReset))
 	} else if res.StatusCode == 409 {  //    409 StatusCode indicates a "Conflit" that server cannot create a resource because
 											  //    it already exists
 		fmt.Println(string(colorRed),"The username already exists! Please choose another username", string(colorReset))
@@ -164,7 +181,131 @@ func Register() {
 }
 
 
+func Verify_Register_OTP(){
+	colorReset := "\033[0m"
+	colorYellow := "\033[33m"
+    colorRed := "\033[31m"
+	colorGreen := "\033[32m"
+	data := url.Values{}
+	reader := bufio.NewReader(os.Stdin)
+	user_credentials,err:=Show_Credentials()
+	if err!=nil{
+		fmt.Println(string(colorYellow),"Please run change config to store your credentials",string(colorReset))
+		return
+	}
+	_, ok := os.LookupEnv("JWT")
+	if ok==false{
+			fmt.Println(string(colorRed),"Please login",string(colorReset))
+			return
+	}
+	JWT:=os.Getenv("JWT")
 
+	_, ok = os.LookupEnv("session")
+	if ok==false{
+		fmt.Println(string(colorRed),"Please login",string(colorReset))
+		return 
+	}
+  	cookieValue:=os.Getenv("session")
+	cookie := &http.Cookie{
+        Name:   "session",
+        Value:  cookieValue,
+        MaxAge: 300,
+    }
+
+	req, err := http.NewRequest("GET","http://"+user_credentials["ip"]+":"+user_credentials["port"]+"/otphandler",nil)
+	client:=&http.Client{}
+	req.Header.Set("Authorization","Bearer "+JWT) // JWT must be available
+	req.AddCookie(cookie)
+
+	res, err := client.Do(req)
+	if err != nil {
+		fmt.Println(string(colorRed),"Error while receiving response",string(colorReset))
+		return 
+	}
+	defer res.Body.Close()
+
+	if res.StatusCode!=200{
+		if res.StatusCode == 401{
+		fmt.Println(string(colorRed),"Please login again!",string(colorReset))
+		return 
+		}	else {
+			return 
+		}
+	}	
+
+	doc, err := goquery.NewDocumentFromReader(res.Body)
+	if err != nil {
+		fmt.Println(string(colorRed),"something went wrong",string(colorReset))
+		return
+	}
+
+	// Find the hidden field with the name "csrf_token"
+	csrfToken := doc.Find("input[name=csrf]").First().AttrOr("value", "")
+	if csrfToken == "" {
+		fmt.Println("CSRF token not found")
+		return 
+	}
+
+	fmt.Print(string(colorYellow),"Please enter the OTP sent to the given EMAIL ID: ",string(colorReset))
+	tempOTP,_:=reader.ReadString('\n')
+	OTP:=strings.ReplaceAll(tempOTP,"\r\n","")
+	OTP=strings.ReplaceAll(OTP," ","")
+	//Preparing the body of the POST request, which is nothing but form data being sent using appropriate header
+	data.Add("otp", OTP)
+	data.Add("csrf",csrfToken)
+
+	csrfCookie := &http.Cookie{
+        Name:   "csrftoken",
+        Value:  csrfToken,
+        MaxAge: 30000,
+    }
+	sessionCookie:=&http.Cookie{
+        Name:   "session",
+        Value:  cookieValue,
+        MaxAge: 30000,
+    }
+	req,err= http.NewRequest("POST","http://"+user_credentials["ip"]+":"+user_credentials["port"]+"/regotphandler",strings.NewReader(data.Encode()))
+	if err!=nil{
+		return 
+	}
+	req.AddCookie(csrfCookie)
+	req.AddCookie(sessionCookie)
+	req.Header.Set("Authorization","Bearer "+JWT)
+	//The header is set to this to recognise that the body of the request is holding form data
+	req.Header.Set("Content-Type","application/x-www-form-urlencoded")
+	
+	//Here the request is being actually sent
+	//the response object will contain the JWT token
+	res, err = client.Do(req)
+	if err != nil {
+		fmt.Println(string(colorRed),"Something went wrong!",string(colorReset))
+		return 
+	}
+	defer res.Body.Close()
+	
+	if res.StatusCode == 200 {
+		//Meaning the registration is successful
+		fmt.Println(string(colorGreen),"Registered successfully!", string(colorReset))
+		
+		return
+
+	} else if res.StatusCode == 400{ 
+		fmt.Println(string(colorRed),"Something went wrong on your side!", string(colorReset))
+		return
+		
+	} else if res.StatusCode == 500 {
+		fmt.Println(string(colorRed),"Something went wrong on server side!", string(colorReset))
+		return
+	} else if res.StatusCode == 412 {
+		fmt.Println(string(colorRed),"CSRF Authentication Failed!", string(colorReset)) 		// http.StatusPreconditionFailed
+		return
+	}else {
+		fmt.Println("something went wrong!")
+		return
+	}
+
+
+}
 
 
 

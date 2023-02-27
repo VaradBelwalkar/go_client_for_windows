@@ -292,7 +292,7 @@ func Verify_OTP(){
 
 	fmt.Print(string(colorYellow),"Please enter the OTP sent to your registered EMAIL ID: ",string(colorReset))
 	tempOTP,_:=reader.ReadString('\n')
-	OTP:=strings.ReplaceAll(tempOTP,"\n","")
+	OTP:=strings.ReplaceAll(tempOTP,"\r\n","")
 	OTP=strings.ReplaceAll(OTP," ","")
 	//Preparing the body of the POST request, which is nothing but form data being sent using appropriate header
 	data.Add("otp", OTP)

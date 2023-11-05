@@ -43,7 +43,7 @@ func main() {
         // Read the user's input
         reader := bufio.NewReader(os.Stdin)
         input, err := reader.ReadString('\n')
-        input=strings.TrimSuffix(input, "\r\n")
+        input=strings.TrimSuffix(input, "\n")
         if err != nil {
             fmt.Println(err)
             continue
@@ -53,12 +53,24 @@ func main() {
         input = strings.TrimSpace(input)
         input = strings.Join(strings.Fields(input), " ")
         // Split the input into separate words
-        words := strings.Split(input, " ")
+        tempWords := strings.Split(input, " ")
+        
+        browser:=false
+
+        var words []string
+        for _, word := range tempWords {
+            if !strings.HasPrefix(word, "-") {
+                words = append(words, word)
+            }else if word == "-online"{
+                browser=true
+            }
+        }
+    
 
         // Check the first word to see which command the user entered
         switch words[0] {
         case "clear":
-            cmd := exec.Command("powershell", "-Command", "Clear-Host")
+            cmd := exec.Command("clear")
             cmd.Stdout = os.Stdout
             cmd.Run()
         case "register":
@@ -124,11 +136,17 @@ func main() {
                     }}
 
                 case "run":
-                    if len(words)>=3{
-                    rq.Container_Run(words[2])}else{fmt.Println(string(colorYellow),"Pass the name of the image you want", string(colorReset))}
+                    if len(words)==3{
+                    rq.Container_Run(words[2],browser,"")
+                }else if len(words) == 4{
+                    rq.Container_Run(words[2],browser,words[3]) 
+                    } else{fmt.Println(string(colorYellow),"Pass the name of the image you want", string(colorReset))}
 
                 case "start":if len(words)>=3{
-                    rq.Container_Start(words[2])}else{fmt.Println(string(colorYellow),"Pass the name of the container you want to start", string(colorReset))}
+                    rq.Container_Start(words[2],browser,"")
+                } else if len(words) ==4{
+                    rq.Container_Start(words[2],browser,words[3])   
+                }else{fmt.Println(string(colorYellow),"Pass the name of the container you want to start", string(colorReset))}
                 case "stop":
                     if len(words)>=3{
                     rq.Container_stop(words[2])}else{fmt.Println(string(colorYellow),"Pass the name of the container you want to stop", string(colorReset))}
@@ -157,6 +175,7 @@ func main() {
             //Print configuration here
             resp,err:=sh.Show_Credentials()
             if err!=nil{
+                fmt.Println(string(colorYellow),"No data found!Please fill up the data by running change config",string(colorReset))
                 continue
             }
             for k,v:=range resp{

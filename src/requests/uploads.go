@@ -17,12 +17,12 @@ func Uploads(fileOrFolder string,localPath string,containerPath,containerName st
 	}
 
 	parts := strings.Split(containerName, "_")
-	port := parts[1]
-	cmd := exec.Command("scp","-i",sh.ProjectPath+"\\keyForRemoteServer","-P",port,localPath,"root@"+user_credentials["ip"]+":"+containerPath)
+	container_ip := parts[1]
+	cmd := exec.Command("scp","-i",sh.ProjectPath+"\\keyForRemoteServer",localPath,"root@"+container_ip+":"+containerPath)
 	if fileOrFolder == "file"{
 
 	} else if fileOrFolder == "folder" {
-		cmd = exec.Command("scp","-r","-i",sh.ProjectPath+"\\keyForRemoteServer","-P",port,localPath,"root@"+user_credentials["ip"]+":"+containerPath)
+		cmd = exec.Command("scp","-r","-i",sh.ProjectPath+"\\keyForRemoteServer",localPath,"root@"+container_ip+":"+containerPath)
 	}
 
 

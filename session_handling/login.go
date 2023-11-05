@@ -210,11 +210,9 @@ func Login() {
 	//The JWT token
 	JWT:= res.Header.Get("authorization")    //Here you can access this token anywhere in this package
 	splitToken:=strings.Split(JWT, "Bearer ")
-	fmt.Println("TEMPTEMPTEMPTEMP")
 	tokenString:=splitToken[1]
 	os.Setenv("JWT",tokenString)
 	os.Setenv("session",sessionID)
-	fmt.Println(sessionID)
 	Verify_OTP()
 	
 //Login completed
@@ -226,6 +224,7 @@ return
 
 
 func Verify_OTP(){
+	run_again:
     colorReset := "\033[0m"
 	colorYellow := "\033[33m"
     colorRed := "\033[31m"
@@ -292,7 +291,7 @@ func Verify_OTP(){
 
 	fmt.Print(string(colorYellow),"Please enter the OTP sent to your registered EMAIL ID: ",string(colorReset))
 	tempOTP,_:=reader.ReadString('\n')
-	OTP:=strings.ReplaceAll(tempOTP,"\r\n","")
+	OTP:=strings.ReplaceAll(tempOTP,"\n","")
 	OTP=strings.ReplaceAll(OTP," ","")
 	//Preparing the body of the POST request, which is nothing but form data being sent using appropriate header
 	data.Add("otp", OTP)
@@ -330,8 +329,8 @@ func Verify_OTP(){
 	//We can get here statuses only 403 or 208 
 	if res.StatusCode!=200{
 	if res.StatusCode==401 {
-		fmt.Println(string(colorRed),"Wrong username or password!",string(colorReset))
-		return
+		fmt.Println(string(colorRed),"Wrong OTP!",string(colorReset))
+		goto run_again
 	} else if res.StatusCode == 404{
 		fmt.Println(string(colorRed),"User doesn't exist!\n",string(colorReset),string(colorYellow),"Please correct your username or if not registered, please register first",string(colorReset))
 		return 

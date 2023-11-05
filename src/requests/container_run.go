@@ -10,7 +10,7 @@ import (
 )
 
 
-func Container_Run(imageName string){
+func Container_Run(imageName string,browser bool,given_port string ){
     colorReset := "\033[0m"
 	colorGreen := "\033[32m"
 	colorBlue := "\033[34m"
@@ -40,12 +40,9 @@ func Container_Run(imageName string){
 			return 
 		}
 	}
-	user_credentials,err:=sh.Show_Credentials()
-	if err!=nil{
-		fmt.Println(string(colorYellow),"Please run change config to store your credentials",string(colorReset))
-	}
+
 	privateKey:=resp["privatekey"].(string)	
-	port:=resp["port"].(string)
+	container_ip:=resp["container_ip"].(string)
 	// define the path to the bash script
 
 	err = ioutil.WriteFile(sh.ProjectPath+"\\keyForRemoteServer", []byte(privateKey), 0600)
@@ -56,11 +53,29 @@ func Container_Run(imageName string){
     }
 	// Parameters to pass to the script
 	fmt.Println(string(colorBlue),"Enter the following line in VSCode for remote development\n",string(colorReset))
-	fmt.Println(string(colorGreen),"ssh "+"-i "+sh.ProjectPath+"\\src\\connections\\keyForRemoteServer"+" -p "+port+" root@"+user_credentials["ip"],string(colorReset))
+	fmt.Println(string(colorGreen),"ssh "+"-i "+sh.ProjectPath+"\\src\\connections\\keyForRemoteServer"+" root@"+container_ip,string(colorReset))
 	fmt.Print(string(colorBlue),"\nPress enter when copied: ",string(colorReset))
 	_, _ = reader.ReadString('\n')	
 	// start the script
-	cmd := exec.Command("ssh","-i",sh.ProjectPath+"\\keyForRemoteServer","-p",port,"root@"+user_credentials["ip"])
+	cmd := exec.Command("ssh","-i",sh.ProjectPath+"\\keyForRemoteServer","root@"+container_ip)
+
+	if browser == true{
+		browser_cmd := exec.Command("google-chrome", "--new-tab",container_ip+":"+given_port)
+		browser_cmd.Stdin = os.Stdin
+		browser_cmd.Stdout = os.Stdout
+		browser_cmd.Stderr = os.Stderr
+		
+		// start the script and wait for it to finish
+		if err := browser_cmd.Start(); err != nil {
+			// handle error
+			log.Fatal(err)
+		}
+		if err := browser_cmd.Wait(); err != nil {
+			// handle error
+			log.Fatal(err)
+		}
+	}
+
 	cmd.Stdin = os.Stdin
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr

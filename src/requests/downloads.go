@@ -11,18 +11,15 @@ func Downloads(fileOrFolder string,containerPath string,userPath,containerName s
 	colorReset := "\033[0m"
 	colorRed := "\033[31m"
     colorYellow := "\033[33m"
-	user_credentials,err:=sh.Show_Credentials()
-	if err!=nil{
-		fmt.Println(string(colorYellow),"Please run change config to store your credentials",string(colorReset))
-	}
+	
 
 	parts := strings.Split(containerName, "_")
-	port := parts[1]
-	cmd := exec.Command("scp","-i",sh.ProjectPath+"\\keyForRemoteServer","-P",port,"root@"+user_credentials["ip"]+":"+containerPath,userPath)
+	container_ip := parts[1]
+	cmd := exec.Command("scp","-i",sh.ProjectPath+"\\keyForRemoteServer","root@"+container_ip+":"+containerPath,userPath)
 	if fileOrFolder == "file"{
 
 	} else if fileOrFolder == "folder"{
-		cmd = exec.Command("scp","-r","-i",sh.ProjectPath+"\\keyForRemoteServer","-P",port,"root@"+user_credentials["ip"]+":"+containerPath,userPath)
+		cmd = exec.Command("scp","-r","-i",sh.ProjectPath+"\\keyForRemoteServer","root@"+container_ip+":"+containerPath,userPath)
 	}
 
 
